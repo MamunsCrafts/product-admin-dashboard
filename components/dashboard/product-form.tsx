@@ -31,7 +31,7 @@ export function ProductForm({ product }: ProductFormProps) {
   const {
     mutate: suggestTags,
     data: suggestedTags,
-  
+    isPending: isSuggestingTags,  
   } = useSuggestProductTags()
 
   const isEditing = !!product
@@ -72,6 +72,12 @@ export function ProductForm({ product }: ProductFormProps) {
     }
   }
 
+  const handleAddTagFromSuggestion = (tag: string) => {
+    if (!tags.includes(tag)) {
+      setTags([...tags, tag])
+    }
+  }
+
   const handleRemoveTag = (tagToRemove: string) => {
     setTags(tags.filter((tag) => tag !== tagToRemove))
   }
@@ -107,7 +113,6 @@ export function ProductForm({ product }: ProductFormProps) {
   console.log("suggestedTags", suggestedTags)
   return (
     <form onSubmit={handleSubmit} className="space-y-6">
-      <button onClick={()=>{suggestTags({name,description})}}>Suggestions</button>
       <div className="space-y-2">
         <Label htmlFor="name">Product Name *</Label>
         <Input
@@ -147,6 +152,45 @@ export function ProductForm({ product }: ProductFormProps) {
         />
         {errors.price && <p className="text-sm text-red-500">{errors.price}</p>}
       </div>
+      <Button type="button" onClick={()=>{suggestTags({name,description})}}           className="bg-gradient-to-r from-purple-500 to-pink-500 hover:from-purple-600 hover:to-pink-600"
+
+      >
+Get AI Tag Suggestions         </Button>   <div className="space-y-2 mt-4 space-x-4">  
+{isSuggestingTags && (
+  <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
+    <div
+      style={{
+        width: 16,
+        height: 16,
+        border: "3px solid #ccc",
+        borderTop: "3px solid #6366f1", // Indigo-500 color
+        borderRadius: "50%",
+        animation: "spin 1s linear infinite",
+      }}
+    />
+    <p>Loading...</p>
+
+    <style>
+      {`
+        @keyframes spin {
+          0% { transform: rotate(0deg);}
+          100% { transform: rotate(360deg);}
+        }
+      `}
+    </style>
+  </div>
+)}         
+      {suggestedTags && suggestedTags.length > 0 && suggestedTags?.map((tag: string, index: number) => (
+        <Badge
+        onClick={()=>handleAddTagFromSuggestion(tag)}
+          key={index}   
+          variant="secondary"
+          className="cursor-pointer hover:bg-secondary-200 py-2" >
+            {tag}  <Plus className="h-4 w-4 text-white ml-2 bg-green-500 rounded-full p-0.5" />
+          </Badge>
+     ))}
+       </div>
+      
 
       <div className="space-y-2">
         <Label>Tags</Label>
@@ -169,7 +213,7 @@ export function ProductForm({ product }: ProductFormProps) {
         {tags.length > 0 && (
           <div className="flex flex-wrap gap-2 mt-2">
             {tags.map((tag, index) => (
-              <Badge key={index} variant="secondary" className="flex items-center gap-1">
+              <Badge  key={index} variant="secondary" className="flex items-center gap-1">
                 {tag}
                 <button type="button" onClick={() => handleRemoveTag(tag)} className="ml-1 hover:text-red-500">
                   <X className="h-3 w-3" />
