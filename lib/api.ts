@@ -114,8 +114,8 @@ class ApiClient {
   async getSuggestProductsTagsFromAIModel(data: { name: string; description: string }): Promise<string[]> {
 
 
-    const temp = "http://118.179.149.32:3005"
-    const response = await fetch(`${temp}/suggest-tags/suggest-tags`, {
+    // const temp = "http://118.179.149.32:3005"
+    const response = await fetch(`${this.baseURL}/suggest-tags/suggest-tags`, {
       method: "POST",
 
       headers: {
