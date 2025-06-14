@@ -110,6 +110,32 @@ class ApiClient {
     }
     return;
   }
+
+  async getSuggestProductsTagsFromAIModel(data: { name: string; description: string }): Promise<string[]> {
+
+
+    const temp = "http://118.179.149.32:3005"
+    const response = await fetch(`${temp}/suggest-tags/suggest-tags`, {
+      method: "POST",
+
+      headers: {
+        "Content-Type": "application/json",
+        ...(this.token ? { Authorization: `Bearer ${this.token}` } : {}),
+      },
+      body: JSON.stringify(data),
+    })
+
+    return response.json().then((data) => {
+      if (!response.ok) {
+        throw new Error(`Failed to suggest tags: ${data.message || "Unknown error"}`)
+      }
+      return data.suggestedTags || []})
+    // return this.request(`/suggest-tags/suggest-tags}`, {
+    //   method: "POST",
+    //   body: JSON.stringify(data),
+    // })
+  }
+
 }
 
 export const apiClient = new ApiClient(API_BASE_URL)

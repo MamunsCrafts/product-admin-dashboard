@@ -34,6 +34,25 @@ export function useProduct(id: string) {
   })
 }
 
+export function useSuggestProductTags() {
+  const { token } = useAuth()
+  const { toast } = useToast()
+
+  if (token) {
+    apiClient.setToken(token)
+  }
+
+  return useMutation({
+    mutationFn: (body: { name: string; description: string }) =>
+      apiClient.getSuggestProductsTagsFromAIModel(body),
+    onError: () => {
+      toast({
+        title: "Failed to suggest tags",
+        variant: "destructive",
+      })
+    },
+  })
+}
 export function useCreateProduct() {
   const queryClient = useQueryClient()
   const { token } = useAuth()

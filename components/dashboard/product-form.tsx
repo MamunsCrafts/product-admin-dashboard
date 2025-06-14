@@ -4,7 +4,7 @@ import type React from "react"
 
 import { useState } from "react"
 import { useRouter } from "next/navigation"
-import { useCreateProduct, useUpdateProduct } from "@/hooks/use-products"
+import { useCreateProduct, useProduct, useProducts, useSuggestProductTags, useUpdateProduct } from "@/hooks/use-products"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
@@ -28,6 +28,11 @@ export function ProductForm({ product }: ProductFormProps) {
   const router = useRouter()
   const createProduct = useCreateProduct()
   const updateProduct = useUpdateProduct()
+  const {
+    mutate: suggestTags,
+    data: suggestedTags,
+  
+  } = useSuggestProductTags()
 
   const isEditing = !!product
   const isLoading = createProduct.isPending || updateProduct.isPending
@@ -71,6 +76,8 @@ export function ProductForm({ product }: ProductFormProps) {
     setTags(tags.filter((tag) => tag !== tagToRemove))
   }
 
+ 
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
 
@@ -97,8 +104,10 @@ export function ProductForm({ product }: ProductFormProps) {
     }
   }
 
+  console.log("suggestedTags", suggestedTags)
   return (
     <form onSubmit={handleSubmit} className="space-y-6">
+      <button onClick={()=>{suggestTags({name,description})}}>Suggestions</button>
       <div className="space-y-2">
         <Label htmlFor="name">Product Name *</Label>
         <Input
